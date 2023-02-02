@@ -15,22 +15,22 @@ class UserStats extends DbConnection
         $this->relation_table = 'users';
     }
 
-    private function get_string_to_date($string)
+    private function get_string_to_date(string $string): string
     {
         return date('Y-m-d', strtotime($string));
     }
 
-    private function is_range_of_dates()
+    private function is_range_of_dates(): bool
     {
         return isset($this->dateFrom) && !empty($this->dateFrom) && isset($this->dateTo) && !empty($this->dateTo);
     }
 
-    private function is_clicks_not_empty()
+    private function is_clicks_not_empty(): bool
     {
         return isset($this->totalClicks) && !empty($this->totalClicks);
     }
 
-    private function get_query()
+    private function get_query(): string
     {
         $where = $this->get_where_conditions_conditionally();
         return "SELECT 
@@ -48,10 +48,11 @@ class UserStats extends DbConnection
         GROUP BY $this->table_name.user_id  
         ORDER BY $this->table_name.date ASC";
     }
-    private function get_where_conditions_conditionally()
+
+    private function get_where_conditions_conditionally(): string
     {
         $where = " users.status = 'active'";
-        $where .= ($this->is_range_of_dates()) ? " AND DATE( $this->table_name.date) > :dateFrom AND DATE( $this->table_name.date) < :dateTo" : '';
+        $where .= ($this->is_range_of_dates()) ? " AND DATE( $this->table_name.date) >= :dateFrom AND DATE( $this->table_name.date) <= :dateTo" : '';
         $where .= ($this->is_clicks_not_empty()) ? " AND  $this->table_name.clicks > :totalClicks" : '';
 
         return $where;
@@ -68,7 +69,7 @@ class UserStats extends DbConnection
         }
     }
 
-    public function get_stats()
+    public function get_stats(): array
     {
         $sql = $this->get_query();
 
