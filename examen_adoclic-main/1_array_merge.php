@@ -23,9 +23,9 @@ La función debe seguir funcionando, ya sea se le agreguen o quiten nombres o co
  */
 
 
-$getNames = function(){
+$getNames = function () {
     $names = [];
-    for($i=0;$i<21;$i++){
+    for ($i = 0; $i < 100; $i++) {
         $names[] = 'name' . ($i + 1);
     }
     return $names;
@@ -33,4 +33,23 @@ $getNames = function(){
 
 $names = $getNames();
 
-$colors = ['red', 'green', 'blue', 'yellow', 'white'];
+$colors = ['red', 'green', 'blue', 'yellow', 'white', 'orange'];
+
+
+
+function  get_colors_by_name($colors, $names)
+{
+    $i = 0;
+    $names_colors = [];
+    $length_colors = count($colors);
+    foreach ($names as $value) {
+        $names_colors[] = ['name' => $value, 'color' => $colors[$i]];
+
+        $i++;
+        if ($i >= $length_colors) {
+            $i = 0;
+        }
+    }
+    return $names_colors;
+}
+print_r(get_colors_by_name($colors, $names));
