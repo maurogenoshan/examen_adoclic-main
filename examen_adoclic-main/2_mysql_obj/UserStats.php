@@ -32,12 +32,21 @@ class UserStats extends DbConnection
 
     private function get_query()
     {
+        $where = $this->get_where_conditions_conditionally();
         return "SELECT 
-        $this->relation_table.id,DATE( $this->table_name.date) as date_stats, $this->table_name.views,user_stats.clicks,$this->table_name.conversions,$this->relation_table.status 
+        CONCAT($this->relation_table.first_name ,' ',$this->relation_table.last_name) AS 'full_name',
+        DATE( $this->table_name.date) AS date_stats,
+        SUM($this->table_name.views) AS total_views,
+        SUM($this->table_name.clicks) AS total_clicks,
+        SUM($this->table_name.conversions) AS total_conversions,
+        SUM($this->table_name.conversions) / SUM($this->table_name.clicks)*100 as cf,
+        MAX(DATE($this->table_name.date)) as last_date,
+        $this->relation_table.status 
         FROM $this->table_name 
         INNER JOIN $this->relation_table ON $this->table_name.user_id = $this->relation_table.id 
-        WHERE " . $this->get_where_conditions_conditionally() .
-            " ORDER BY $this->table_name.date ASC";
+        WHERE $where
+        GROUP BY $this->table_name.user_id  
+        ORDER BY $this->table_name.date ASC";
     }
     private function get_where_conditions_conditionally()
     {
